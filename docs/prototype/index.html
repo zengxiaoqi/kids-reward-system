@@ -1,0 +1,1723 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>小孩行为积分奖惩系统 — UI 原型</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #1a1a2e;
+    color: #333;
+    padding: 40px 20px;
+  }
+  h1 {
+    text-align: center;
+    color: #fff;
+    font-size: 28px;
+    margin-bottom: 10px;
+  }
+  .subtitle {
+    text-align: center;
+    color: #888;
+    font-size: 14px;
+    margin-bottom: 40px;
+  }
+
+  /* 页面容器 */
+  .screens-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 40px;
+    max-width: 1600px;
+    margin: 0 auto 60px;
+  }
+  .screen-wrapper {
+    text-align: center;
+  }
+  .screen-label {
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    letter-spacing: 1px;
+  }
+
+  /* 手机外壳 */
+  .phone {
+    width: 375px;
+    height: 812px;
+    background: #000;
+    border-radius: 44px;
+    padding: 12px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    position: relative;
+  }
+  .phone-screen {
+    width: 100%;
+    height: 100%;
+    background: #F5F5F5;
+    border-radius: 34px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* 状态栏 */
+  .status-bar {
+    height: 44px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    font-size: 12px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .status-bar .time { font-size: 14px; font-weight: 700; }
+  .status-icons { display: flex; gap: 4px; font-size: 11px; }
+
+  /* 底部导航 */
+  .tab-bar {
+    height: 83px;
+    background: #fff;
+    border-top: 1px solid #eee;
+    display: flex;
+    align-items: flex-start;
+    padding-top: 8px;
+    flex-shrink: 0;
+  }
+  .tab-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    font-size: 10px;
+    color: #999;
+  }
+  .tab-item.active { color: #4CAF50; }
+  .tab-icon { font-size: 22px; }
+
+  /* 内容区 */
+  .content {
+    flex: 1;
+    overflow-y: auto;
+    padding-bottom: 10px;
+  }
+  .content::-webkit-scrollbar { display: none; }
+
+  /* ========== 首页 ========== */
+  .home-header {
+    background: #fff;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .child-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .child-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #FFD700, #FFA000);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+  }
+  .child-name {
+    font-size: 16px;
+    font-weight: 700;
+  }
+  .child-name .arrow { font-size: 10px; color: #999; margin-left: 4px; }
+  .header-icons { display: flex; gap: 16px; font-size: 20px; }
+
+  .points-card {
+    margin: 12px 16px;
+    background: linear-gradient(135deg, #4CAF50, #66BB6A);
+    border-radius: 16px;
+    padding: 20px;
+    color: #fff;
+    text-align: center;
+  }
+  .points-card .big-num {
+    font-size: 48px;
+    font-weight: 800;
+    line-height: 1;
+  }
+  .points-card .label { font-size: 14px; opacity: 0.9; margin-top: 4px; }
+  .points-card .streak {
+    margin-top: 8px;
+    font-size: 13px;
+    background: rgba(255,255,255,0.2);
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+  }
+
+  .task-section {
+    margin: 12px 16px;
+    background: #fff;
+    border-radius: 16px;
+    padding: 16px;
+  }
+  .task-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .task-header h3 { font-size: 15px; font-weight: 700; }
+  .task-progress { font-size: 13px; color: #4CAF50; font-weight: 600; }
+
+  .task-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .task-item:last-child { border-bottom: none; }
+  .task-emoji { font-size: 24px; margin-right: 12px; }
+  .task-name { flex: 1; font-size: 14px; font-weight: 500; }
+  .task-points { font-size: 13px; color: #4CAF50; font-weight: 600; margin-right: 12px; }
+  .task-check {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+  }
+  .task-check.done {
+    background: #4CAF50;
+    color: #fff;
+  }
+  .task-check.pending {
+    border: 2px solid #ddd;
+    color: #ddd;
+  }
+
+  .quick-actions {
+    margin: 12px 16px;
+    display: flex;
+    gap: 10px;
+  }
+  .quick-btn {
+    flex: 1;
+    background: #fff;
+    border-radius: 12px;
+    padding: 12px 8px;
+    text-align: center;
+    font-size: 12px;
+  }
+  .quick-btn .emoji { font-size: 24px; display: block; margin-bottom: 4px; }
+  .quick-btn .pts { color: #4CAF50; font-weight: 600; }
+  .quick-btn.add-more { background: #E8F5E9; }
+
+  .ai-entry {
+    margin: 12px 16px;
+    background: linear-gradient(135deg, #E3F2FD, #BBDEFB);
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: #1565C0;
+    font-weight: 500;
+  }
+  .ai-entry .ai-icon { font-size: 24px; }
+
+  /* ========== 积分页 ========== */
+  .page-header {
+    background: #fff;
+    padding: 12px 16px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 700;
+    border-bottom: 1px solid #eee;
+  }
+  .points-summary {
+    margin: 12px 16px;
+    background: #fff;
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+  }
+  .points-summary .total {
+    font-size: 42px;
+    font-weight: 800;
+    color: #FF9800;
+  }
+  .points-summary .total-label { font-size: 13px; color: #999; }
+  .points-summary .sub-stats {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #f0f0f0;
+  }
+  .sub-stat { text-align: center; }
+  .sub-stat .val { font-size: 18px; font-weight: 700; color: #4CAF50; }
+  .sub-stat .lbl { font-size: 11px; color: #999; }
+
+  .chart-placeholder {
+    margin: 12px 16px;
+    background: #fff;
+    border-radius: 16px;
+    padding: 16px;
+    height: 160px;
+    position: relative;
+    overflow: hidden;
+  }
+  .chart-title { font-size: 14px; font-weight: 600; margin-bottom: 12px; }
+  .chart-bars {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    height: 90px;
+    padding: 0 8px;
+  }
+  .chart-bar-wrap { text-align: center; flex: 1; }
+  .chart-bar {
+    width: 24px;
+    margin: 0 auto;
+    background: linear-gradient(to top, #4CAF50, #81C784);
+    border-radius: 4px 4px 0 0;
+    transition: height 0.3s;
+  }
+  .chart-bar-label { font-size: 10px; color: #999; margin-top: 4px; }
+
+  .filter-tabs {
+    margin: 0 16px;
+    display: flex;
+    gap: 8px;
+  }
+  .filter-tab {
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    background: #fff;
+    color: #666;
+  }
+  .filter-tab.active {
+    background: #4CAF50;
+    color: #fff;
+  }
+
+  .record-section { margin: 12px 16px; }
+  .record-date {
+    font-size: 13px;
+    font-weight: 600;
+    color: #666;
+    margin-bottom: 8px;
+  }
+  .record-list {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .record-item {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    border-bottom: 1px solid #f5f5f5;
+  }
+  .record-item:last-child { border-bottom: none; }
+  .record-emoji { font-size: 20px; margin-right: 10px; }
+  .record-info { flex: 1; }
+  .record-name { font-size: 14px; font-weight: 500; }
+  .record-time { font-size: 11px; color: #999; }
+  .record-points { font-size: 15px; font-weight: 700; }
+  .record-points.plus { color: #4CAF50; }
+  .record-points.minus { color: #F44336; }
+
+  /* ========== 礼品页 ========== */
+  .gift-balance {
+    margin: 12px 16px;
+    background: #fff;
+    border-radius: 12px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .gift-balance .bal-label { font-size: 13px; color: #666; }
+  .gift-balance .bal-val { font-size: 20px; font-weight: 800; color: #FF9800; }
+
+  .gift-grid {
+    margin: 12px 16px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .gift-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 16px 12px;
+    text-align: center;
+  }
+  .gift-emoji { font-size: 36px; margin-bottom: 8px; }
+  .gift-name { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+  .gift-cost { font-size: 12px; color: #FF9800; font-weight: 600; margin-bottom: 8px; }
+  .gift-btn {
+    padding: 6px 0;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    width: 100%;
+  }
+  .gift-btn.can-redeem {
+    background: #4CAF50;
+    color: #fff;
+  }
+  .gift-btn.cannot-redeem {
+    background: #FFF3E0;
+    color: #FF9800;
+  }
+
+  .wishlist-section {
+    margin: 12px 16px;
+  }
+  .wishlist-header {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .wishlist-item {
+    background: #fff;
+    border-radius: 12px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .wishlist-info { flex: 1; }
+  .wishlist-name { font-size: 13px; font-weight: 600; }
+  .wishlist-progress-text { font-size: 11px; color: #999; }
+  .progress-bar {
+    height: 6px;
+    background: #eee;
+    border-radius: 3px;
+    margin-top: 6px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #FF9800, #FFB74D);
+    border-radius: 3px;
+  }
+
+  /* ========== 成长报告页 ========== */
+  .ai-summary-card {
+    margin: 12px 16px;
+    background: linear-gradient(135deg, #E8EAF6, #C5CAE9);
+    border-radius: 16px;
+    padding: 16px;
+  }
+  .ai-summary-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #283593;
+  }
+  .ai-summary-text {
+    font-size: 13px;
+    line-height: 1.6;
+    color: #333;
+  }
+  .ai-summary-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .ai-action-btn {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .ai-action-btn.primary { background: #3F51B5; color: #fff; }
+  .ai-action-btn.secondary { background: rgba(255,255,255,0.6); color: #3F51B5; }
+
+  .radar-section {
+    margin: 12px 16px;
+    background: #fff;
+    border-radius: 16px;
+    padding: 16px;
+  }
+  .radar-title { font-size: 14px; font-weight: 600; margin-bottom: 12px; text-align: center; }
+  .radar-chart {
+    width: 200px;
+    height: 200px;
+    margin: 0 auto;
+    position: relative;
+  }
+  .radar-bg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .radar-label {
+    position: absolute;
+    font-size: 11px;
+    font-weight: 600;
+    color: #666;
+  }
+  .radar-label.top { top: 0; left: 50%; transform: translateX(-50%); }
+  .radar-label.right { top: 38%; right: -4px; }
+  .radar-label.bottom-right { bottom: 8%; right: 8%; }
+  .radar-label.bottom-left { bottom: 8%; left: 8%; }
+  .radar-label.left { top: 38%; left: -4px; }
+  .radar-scores {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+  .radar-score {
+    font-size: 11px;
+    color: #666;
+    background: #f5f5f5;
+    padding: 3px 8px;
+    border-radius: 10px;
+  }
+  .radar-score span { font-weight: 700; color: #4CAF50; }
+
+  .habit-section {
+    margin: 12px 16px;
+    background: #fff;
+    border-radius: 16px;
+    padding: 16px;
+  }
+  .habit-title { font-size: 14px; font-weight: 600; margin-bottom: 12px; }
+  .habit-item {
+    margin-bottom: 10px;
+  }
+  .habit-item:last-child { margin-bottom: 0; }
+  .habit-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+  }
+  .habit-name { font-size: 13px; }
+  .habit-count { font-size: 11px; color: #999; }
+  .habit-bar {
+    height: 8px;
+    background: #eee;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .habit-fill {
+    height: 100%;
+    border-radius: 4px;
+    background: linear-gradient(90deg, #4CAF50, #81C784);
+  }
+  .habit-fill.almost { background: linear-gradient(90deg, #FF9800, #FFB74D); }
+  .habit-fill.done { background: linear-gradient(90deg, #2196F3, #64B5F6); }
+
+  .achievement-section {
+    margin: 12px 16px;
+    background: #fff;
+    border-radius: 16px;
+    padding: 16px;
+  }
+  .achievement-title { font-size: 14px; font-weight: 600; margin-bottom: 12px; }
+  .achievement-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+  }
+  .achievement-item {
+    text-align: center;
+    width: 60px;
+  }
+  .achievement-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin: 0 auto 4px;
+  }
+  .achievement-icon.unlocked {
+    background: linear-gradient(135deg, #FFD700, #FFA000);
+  }
+  .achievement-icon.locked {
+    background: #eee;
+    filter: grayscale(1);
+    opacity: 0.5;
+  }
+  .achievement-name { font-size: 10px; color: #666; }
+
+  /* ========== AI 对话页 ========== */
+  .chat-header {
+    background: #fff;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid #eee;
+  }
+  .chat-back { font-size: 20px; color: #333; }
+  .chat-title-area { flex: 1; }
+  .chat-title { font-size: 15px; font-weight: 700; }
+  .chat-subtitle { font-size: 11px; color: #999; }
+  .chat-child-sel {
+    font-size: 12px;
+    background: #f0f0f0;
+    padding: 4px 10px;
+    border-radius: 12px;
+    color: #666;
+  }
+
+  .chat-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    background: #F5F5F5;
+  }
+  .chat-bubble {
+    max-width: 85%;
+    margin-bottom: 16px;
+  }
+  .chat-bubble.ai { margin-right: auto; }
+  .chat-bubble.user { margin-left: auto; }
+  .bubble-content {
+    padding: 12px 14px;
+    border-radius: 16px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .ai .bubble-content {
+    background: #fff;
+    border-bottom-left-radius: 4px;
+  }
+  .user .bubble-content {
+    background: #4CAF50;
+    color: #fff;
+    border-bottom-right-radius: 4px;
+  }
+  .bubble-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .bubble-action-btn {
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 600;
+    background: #E8F5E9;
+    color: #4CAF50;
+  }
+
+  .chat-input-bar {
+    background: #fff;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-top: 1px solid #eee;
+    flex-shrink: 0;
+  }
+  .chat-input {
+    flex: 1;
+    height: 36px;
+    background: #f5f5f5;
+    border-radius: 18px;
+    border: none;
+    padding: 0 14px;
+    font-size: 13px;
+    color: #999;
+    display: flex;
+    align-items: center;
+  }
+  .chat-send {
+    width: 36px;
+    height: 36px;
+    background: #4CAF50;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 16px;
+  }
+
+  /* ========== 飞书交互页 ========== */
+  .feishu-header {
+    background: #fff;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid #eee;
+  }
+  .feishu-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #3F51B5, #7986CB);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: #fff;
+  }
+  .feishu-name { font-size: 15px; font-weight: 700; }
+  .feishu-status { font-size: 11px; color: #4CAF50; }
+
+  .feishu-chat {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    background: #F5F5F5;
+  }
+  .fs-msg {
+    max-width: 85%;
+    margin-bottom: 16px;
+  }
+  .fs-msg.user { margin-left: auto; }
+  .fs-msg.bot { margin-right: auto; }
+  .fs-bubble {
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .fs-msg.user .fs-bubble {
+    background: #4CAF50;
+    color: #fff;
+    border-bottom-right-radius: 4px;
+  }
+  .fs-msg.bot .fs-bubble {
+    background: #fff;
+    border-bottom-left-radius: 4px;
+  }
+  .fs-card {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-top: 4px;
+    border: 1px solid #e0e0e0;
+  }
+  .fs-card-header {
+    padding: 10px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #666;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .fs-card-body {
+    padding: 12px 14px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .fs-card-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+  }
+  .fs-card-actions {
+    display: flex;
+    border-top: 1px solid #f0f0f0;
+  }
+  .fs-card-btn {
+    flex: 1;
+    padding: 10px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    border-right: 1px solid #f0f0f0;
+  }
+  .fs-card-btn:last-child { border-right: none; }
+  .fs-card-btn.primary { color: #4CAF50; }
+  .fs-card-btn.danger { color: #F44336; }
+  .fs-card-btn.info { color: #2196F3; }
+
+  .fs-report-card .fs-card-header {
+    background: linear-gradient(135deg, #E8EAF6, #C5CAE9);
+    color: #283593;
+  }
+
+  .fs-time {
+    font-size: 10px;
+    color: #999;
+    text-align: center;
+    margin: 12px 0;
+  }
+
+  /* 页面标题 */
+  .section-title {
+    text-align: center;
+    color: #fff;
+    font-size: 20px;
+    font-weight: 700;
+    margin: 40px 0 24px;
+    position: relative;
+  }
+  .section-title::after {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 3px;
+    background: #4CAF50;
+    margin: 8px auto 0;
+    border-radius: 2px;
+  }
+
+  /* 设计系统展示 */
+  .design-system {
+    max-width: 1200px;
+    margin: 0 auto 60px;
+    padding: 0 20px;
+  }
+  .ds-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+  .ds-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: #333;
+  }
+  .color-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .color-swatch {
+    width: 80px;
+    text-align: center;
+  }
+  .color-box {
+    width: 80px;
+    height: 50px;
+    border-radius: 10px;
+    margin-bottom: 6px;
+  }
+  .color-name { font-size: 11px; color: #666; }
+  .color-hex { font-size: 10px; color: #999; }
+
+  .icon-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .icon-item {
+    text-align: center;
+    width: 60px;
+  }
+  .icon-emoji { font-size: 32px; }
+  .icon-label { font-size: 10px; color: #666; margin-top: 4px; }
+
+  .flow-section {
+    max-width: 1200px;
+    margin: 0 auto 60px;
+    padding: 0 20px;
+  }
+  .flow-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 24px;
+    overflow-x: auto;
+  }
+  .flow-steps {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: max-content;
+    justify-content: center;
+  }
+  .flow-step {
+    background: #E8F5E9;
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #2E7D32;
+    text-align: center;
+    white-space: nowrap;
+  }
+  .flow-step.decision {
+    background: #FFF3E0;
+    color: #E65100;
+  }
+  .flow-step.action {
+    background: #E3F2FD;
+    color: #1565C0;
+  }
+  .flow-arrow { font-size: 18px; color: #999; }
+</style>
+</head>
+<body>
+
+<h1>🌟 小孩行为积分奖惩系统</h1>
+<p class="subtitle">UI 交互原型 — v0.1</p>
+
+<!-- ========== APP 核心页面 ========== -->
+<div class="section-title">📱 App 核心页面</div>
+
+<div class="screens-row">
+  <!-- 首页 -->
+  <div class="screen-wrapper">
+    <div class="screen-label">🏠 首页 — 今日打卡</div>
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span class="time">9:41</span>
+          <span class="status-icons">📶 🔋</span>
+        </div>
+        <div class="content">
+          <div class="home-header">
+            <div class="child-selector">
+              <div class="child-avatar">👦</div>
+              <span class="child-name">小明 <span class="arrow">▾</span></span>
+            </div>
+            <div class="header-icons">🔔 ⚙️</div>
+          </div>
+
+          <div class="points-card">
+            <div class="label">⭐ 当前积分</div>
+            <div class="big-num">85</div>
+            <div class="streak">🔥 连续打卡 5 天</div>
+          </div>
+
+          <div class="task-section">
+            <div class="task-header">
+              <h3>📅 今日任务</h3>
+              <span class="task-progress">5/7 ✅</span>
+            </div>
+            <div class="task-item">
+              <span class="task-emoji">🌅</span>
+              <span class="task-name">起床洗漱</span>
+              <span class="task-points">+2</span>
+              <div class="task-check done">✓</div>
+            </div>
+            <div class="task-item">
+              <span class="task-emoji">🥣</span>
+              <span class="task-name">早餐</span>
+              <span class="task-points">+1</span>
+              <div class="task-check done">✓</div>
+            </div>
+            <div class="task-item">
+              <span class="task-emoji">📚</span>
+              <span class="task-name">学习/作业</span>
+              <span class="task-points">+3</span>
+              <div class="task-check done">✓</div>
+            </div>
+            <div class="task-item">
+              <span class="task-emoji">🍱</span>
+              <span class="task-name">中午吃饭</span>
+              <span class="task-points">+1</span>
+              <div class="task-check done">✓</div>
+            </div>
+            <div class="task-item">
+              <span class="task-emoji">🍽️</span>
+              <span class="task-name">晚上吃饭</span>
+              <span class="task-points">+1</span>
+              <div class="task-check done">✓</div>
+            </div>
+            <div class="task-item">
+              <span class="task-emoji">🪥</span>
+              <span class="task-name">晚上洗漱</span>
+              <span class="task-points">+2</span>
+              <div class="task-check pending"></div>
+            </div>
+            <div class="task-item">
+              <span class="task-emoji">😴</span>
+              <span class="task-name">睡觉</span>
+              <span class="task-points">+2</span>
+              <div class="task-check pending"></div>
+            </div>
+          </div>
+
+          <div class="quick-actions">
+            <div class="quick-btn">
+              <span class="emoji">📖</span>
+              阅读 <span class="pts">+3</span>
+            </div>
+            <div class="quick-btn">
+              <span class="emoji">🏃</span>
+              运动 <span class="pts">+3</span>
+            </div>
+            <div class="quick-btn add-more">
+              <span class="emoji">➕</span>
+              更多
+            </div>
+          </div>
+
+          <div class="ai-entry">
+            <span class="ai-icon">🤖</span>
+            跟 AI 聊聊小明的表现 →
+          </div>
+        </div>
+
+        <div class="tab-bar">
+          <div class="tab-item active">
+            <span class="tab-icon">🏠</span>
+            <span>首页</span>
+          </div>
+          <div class="tab-item">
+            <span class="tab-icon">⭐</span>
+            <span>积分</span>
+          </div>
+          <div class="tab-item">
+            <span class="tab-icon">🎁</span>
+            <span>礼品</span>
+          </div>
+          <div class="tab-item">
+            <span class="tab-icon">📊</span>
+            <span>成长</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 积分页 -->
+  <div class="screen-wrapper">
+    <div class="screen-label">⭐ 积分 — 明细与趋势</div>
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span class="time">9:41</span>
+          <span class="status-icons">📶 🔋</span>
+        </div>
+        <div class="page-header">⭐ 积分</div>
+        <div class="content">
+          <div class="points-summary">
+            <div class="total-label">当前积分</div>
+            <div class="total">85</div>
+            <div class="sub-stats">
+              <div class="sub-stat">
+                <div class="val">+10</div>
+                <div class="lbl">今日</div>
+              </div>
+              <div class="sub-stat">
+                <div class="val">+58</div>
+                <div class="lbl">本周</div>
+              </div>
+              <div class="sub-stat">
+                <div class="val">+210</div>
+                <div class="lbl">本月</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="chart-placeholder">
+            <div class="chart-title">📈 本周积分趋势</div>
+            <div class="chart-bars">
+              <div class="chart-bar-wrap">
+                <div class="chart-bar" style="height:45px"></div>
+                <div class="chart-bar-label">一</div>
+              </div>
+              <div class="chart-bar-wrap">
+                <div class="chart-bar" style="height:60px"></div>
+                <div class="chart-bar-label">二</div>
+              </div>
+              <div class="chart-bar-wrap">
+                <div class="chart-bar" style="height:35px"></div>
+                <div class="chart-bar-label">三</div>
+              </div>
+              <div class="chart-bar-wrap">
+                <div class="chart-bar" style="height:70px"></div>
+                <div class="chart-bar-label">四</div>
+              </div>
+              <div class="chart-bar-wrap">
+                <div class="chart-bar" style="height:55px"></div>
+                <div class="chart-bar-label">五</div>
+              </div>
+              <div class="chart-bar-wrap">
+                <div class="chart-bar" style="height:80px"></div>
+                <div class="chart-bar-label">六</div>
+              </div>
+              <div class="chart-bar-wrap">
+                <div class="chart-bar" style="height:50px"></div>
+                <div class="chart-bar-label">日</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="filter-tabs">
+            <div class="filter-tab active">全部</div>
+            <div class="filter-tab">加分</div>
+            <div class="filter-tab">扣分</div>
+          </div>
+
+          <div class="record-section">
+            <div class="record-date">📅 今天</div>
+            <div class="record-list">
+              <div class="record-item">
+                <span class="record-emoji">🪥</span>
+                <div class="record-info">
+                  <div class="record-name">晚上洗漱</div>
+                  <div class="record-time">19:30</div>
+                </div>
+                <span class="record-points plus">+2</span>
+              </div>
+              <div class="record-item">
+                <span class="record-emoji">📖</span>
+                <div class="record-info">
+                  <div class="record-name">课外阅读</div>
+                  <div class="record-time">17:00 · 读了30分钟</div>
+                </div>
+                <span class="record-points plus">+3</span>
+              </div>
+              <div class="record-item">
+                <span class="record-emoji">😤</span>
+                <div class="record-info">
+                  <div class="record-name">发脾气</div>
+                  <div class="record-time">15:00 · 因为看电视</div>
+                </div>
+                <span class="record-points minus">-2</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="record-section">
+            <div class="record-date">📅 昨天</div>
+            <div class="record-list">
+              <div class="record-item">
+                <span class="record-emoji">😴</span>
+                <div class="record-info">
+                  <div class="record-name">按时睡觉</div>
+                  <div class="record-time">21:00</div>
+                </div>
+                <span class="record-points plus">+2</span>
+              </div>
+              <div class="record-item">
+                <span class="record-emoji">🧹</span>
+                <div class="record-info">
+                  <div class="record-name">帮忙做家务</div>
+                  <div class="record-time">16:00 · 扫地</div>
+                </div>
+                <span class="record-points plus">+2</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-bar">
+          <div class="tab-item">
+            <span class="tab-icon">🏠</span>
+            <span>首页</span>
+          </div>
+          <div class="tab-item active">
+            <span class="tab-icon">⭐</span>
+            <span>积分</span>
+          </div>
+          <div class="tab-item">
+            <span class="tab-icon">🎁</span>
+            <span>礼品</span>
+          </div>
+          <div class="tab-item">
+            <span class="tab-icon">📊</span>
+            <span>成长</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 礼品页 -->
+  <div class="screen-wrapper">
+    <div class="screen-label">🎁 礼品商城</div>
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span class="time">9:41</span>
+          <span class="status-icons">📶 🔋</span>
+        </div>
+        <div class="page-header">🎁 礼品商城</div>
+        <div class="content">
+          <div class="gift-balance">
+            <span class="bal-label">当前积分</span>
+            <span class="bal-val">⭐ 85</span>
+          </div>
+
+          <div class="filter-tabs" style="margin-bottom:0">
+            <div class="filter-tab active">全部</div>
+            <div class="filter-tab">娱乐</div>
+            <div class="filter-tab">食物</div>
+            <div class="filter-tab">外出</div>
+            <div class="filter-tab">学习</div>
+          </div>
+
+          <div class="gift-grid">
+            <div class="gift-card">
+              <div class="gift-emoji">📺</div>
+              <div class="gift-name">看动画片 30分钟</div>
+              <div class="gift-cost">⭐ 10 积分</div>
+              <div class="gift-btn can-redeem">兑换</div>
+            </div>
+            <div class="gift-card">
+              <div class="gift-emoji">🍪</div>
+              <div class="gift-name">选一个小零食</div>
+              <div class="gift-cost">⭐ 15 积分</div>
+              <div class="gift-btn can-redeem">兑换</div>
+            </div>
+            <div class="gift-card">
+              <div class="gift-emoji">🏞️</div>
+              <div class="gift-name">去公园玩</div>
+              <div class="gift-cost">⭐ 30 积分</div>
+              <div class="gift-btn can-redeem">兑换</div>
+            </div>
+            <div class="gift-card">
+              <div class="gift-emoji">📚</div>
+              <div class="gift-name">买一本新书</div>
+              <div class="gift-cost">⭐ 50 积分</div>
+              <div class="gift-btn can-redeem">兑换</div>
+            </div>
+            <div class="gift-card">
+              <div class="gift-emoji">🎮</div>
+              <div class="gift-name">买一个玩具</div>
+              <div class="gift-cost">⭐ 100 积分</div>
+              <div class="gift-btn cannot-redeem">加入心愿单</div>
+            </div>
+            <div class="gift-card">
+              <div class="gift-emoji">🎢</div>
+              <div class="gift-name">去游乐园</div>
+              <div class="gift-cost">⭐ 200 积分</div>
+              <div class="gift-btn cannot-redeem">加入心愿单</div>
+            </div>
+          </div>
+
+          <div class="wishlist-section">
+            <div class="wishlist-header">💝 心愿单 (2)</div>
+            <div class="wishlist-item" style="margin-bottom:8px">
+              <span style="font-size:24px">🎮</span>
+              <div class="wishlist-info">
+                <div class="wishlist-name">买一个玩具</div>
+                <div class="wishlist-progress-text">还差 15 积分</div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width:85%"></div>
+                </div>
+              </div>
+            </div>
+            <div class="wishlist-item">
+              <span style="font-size:24px">🎢</span>
+              <div class="wishlist-info">
+                <div class="wishlist-name">去游乐园</div>
+                <div class="wishlist-progress-text">还差 115 积分</div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width:42%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-bar">
+          <div class="tab-item">
+            <span class="tab-icon">🏠</span>
+            <span>首页</span>
+          </div>
+          <div class="tab-item">
+            <span class="tab-icon">⭐</span>
+            <span>积分</span>
+          </div>
+          <div class="tab-item active">
+            <span class="tab-icon">🎁</span>
+            <span>礼品</span>
+          </div>
+          <div class="tab-item">
+            <span class="tab-icon">📊</span>
+            <span>成长</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 第二行 -->
+<div class="screens-row">
+  <!-- 成长报告页 -->
+  <div class="screen-wrapper">
+    <div class="screen-label">📊 成长报告 — AI 驱动</div>
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span class="time">9:41</span>
+          <span class="status-icons">📶 🔋</span>
+        </div>
+        <div class="page-header">📊 成长报告</div>
+        <div class="content">
+          <div class="ai-summary-card">
+            <div class="ai-summary-header">🤖 AI 今日小结</div>
+            <div class="ai-summary-text">
+              小明今天表现很棒！完成了 5/7 项日常任务，还主动阅读了 30 分钟课外书 📖<br><br>
+              💡 <b>建议</b>：睡觉时间可以再早一点，试试 9 点上床？
+            </div>
+            <div class="ai-summary-actions">
+              <div class="ai-action-btn primary">💬 问问 AI</div>
+              <div class="ai-action-btn secondary">查看详情</div>
+            </div>
+          </div>
+
+          <div class="radar-section">
+            <div class="radar-title">📈 行为雷达图</div>
+            <div class="radar-chart">
+              <svg width="200" height="200" viewBox="0 0 200 200">
+                <!-- 背景五边形 -->
+                <polygon points="100,20 176,68 147,156 53,156 24,68" fill="none" stroke="#eee" stroke-width="1"/>
+                <polygon points="100,44 157,76 138,140 62,140 43,76" fill="none" stroke="#eee" stroke-width="1"/>
+                <polygon points="100,68 138,84 129,124 71,124 62,84" fill="none" stroke="#eee" stroke-width="1"/>
+                <!-- 数据五边形 -->
+                <polygon points="100,28 164,74 135,148 60,140 36,72" fill="rgba(76,175,80,0.2)" stroke="#4CAF50" stroke-width="2"/>
+                <!-- 数据点 -->
+                <circle cx="100" cy="28" r="4" fill="#4CAF50"/>
+                <circle cx="164" cy="74" r="4" fill="#4CAF50"/>
+                <circle cx="135" cy="148" r="4" fill="#4CAF50"/>
+                <circle cx="60" cy="140" r="4" fill="#4CAF50"/>
+                <circle cx="36" cy="72" r="4" fill="#4CAF50"/>
+              </svg>
+              <div class="radar-label top">生活习惯</div>
+              <div class="radar-label right">学习</div>
+              <div class="radar-label bottom-right">运动</div>
+              <div class="radar-label bottom-left">品德</div>
+              <div class="radar-label left">创意</div>
+            </div>
+            <div class="radar-scores">
+              <span class="radar-score">生活 <span>85</span></span>
+              <span class="radar-score">学习 <span>70</span></span>
+              <span class="radar-score">运动 <span>60</span></span>
+              <span class="radar-score">品德 <span>90</span></span>
+              <span class="radar-score">创意 <span>75</span></span>
+            </div>
+          </div>
+
+          <div class="habit-section">
+            <div class="habit-title">🏅 习惯养成进度</div>
+            <div class="habit-item">
+              <div class="habit-row">
+                <span class="habit-name">😴 按时睡觉</span>
+                <span class="habit-count">28/30 天</span>
+              </div>
+              <div class="habit-bar">
+                <div class="habit-fill almost" style="width:93%"></div>
+              </div>
+            </div>
+            <div class="habit-item">
+              <div class="habit-row">
+                <span class="habit-name">🌅 按时起床</span>
+                <span class="habit-count">21/30 天</span>
+              </div>
+              <div class="habit-bar">
+                <div class="habit-fill" style="width:70%"></div>
+              </div>
+            </div>
+            <div class="habit-item">
+              <div class="habit-row">
+                <span class="habit-name">📚 每日阅读</span>
+                <span class="habit-count">12/30 天</span>
+              </div>
+              <div class="habit-bar">
+                <div class="habit-fill" style="width:40%"></div>
+              </div>
+            </div>
+            <div class="habit-item">
+              <div class="habit-row">
+                <span class="habit-name">🪥 按时洗漱</span>
+                <span class="habit-count">30/30 天 ✅</span>
+              </div>
+              <div class="habit-bar">
+                <div class="habit-fill done" style="width:100%"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="achievement-section">
+            <div class="achievement-title">🏆 成就墙</div>
+            <div class="achievement-grid">
+              <div class="achievement-item">
+                <div class="achievement-icon unlocked">🏅</div>
+                <div class="achievement-name">一周达人</div>
+              </div>
+              <div class="achievement-item">
+                <div class="achievement-icon unlocked">🏆</div>
+                <div class="achievement-name">月度之星</div>
+              </div>
+              <div class="achievement-item">
+                <div class="achievement-icon unlocked">⭐</div>
+                <div class="achievement-name">百分能手</div>
+              </div>
+              <div class="achievement-item">
+                <div class="achievement-icon unlocked">🎖️</div>
+                <div class="achievement-name">梦想启程</div>
+              </div>
+              <div class="achievement-item">
+                <div class="achievement-icon locked">💎</div>
+                <div class="achievement-name">积分大王</div>
+              </div>
+              <div class="achievement-item">
+                <div class="achievement-icon locked">🌈</div>
+                <div class="achievement-name">品德标兵</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-bar">
+          <div class="tab-item">
+            <span class="tab-icon">🏠</span>
+            <span>首页</span>
+          </div>
+          <div class="tab-item">
+            <span class="tab-icon">⭐</span>
+            <span>积分</span>
+          </div>
+          <div class="tab-item">
+            <span class="tab-icon">🎁</span>
+            <span>礼品</span>
+          </div>
+          <div class="tab-item active">
+            <span class="tab-icon">📊</span>
+            <span>成长</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI 对话页 -->
+  <div class="screen-wrapper">
+    <div class="screen-label">🤖 AI 对话</div>
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span class="time">9:41</span>
+          <span class="status-icons">📶 🔋</span>
+        </div>
+        <div class="chat-header">
+          <span class="chat-back">←</span>
+          <div class="chat-title-area">
+            <div class="chat-title">🤖 AI 成长助手</div>
+          </div>
+          <span class="chat-child-sel">小明 ▾</span>
+        </div>
+        <div class="chat-content">
+          <div class="chat-bubble ai">
+            <div class="bubble-content">
+              早上好！☀️ 小明昨天表现不错，完成了 6/7 项任务，积分 +12。今天也要加油哦！💪
+            </div>
+          </div>
+
+          <div class="chat-bubble user">
+            <div class="bubble-content">
+              小明最近学习怎么样？
+            </div>
+          </div>
+
+          <div class="chat-bubble ai">
+            <div class="bubble-content">
+              📊 <b>小明这周学习方面：</b><br><br>
+              • 作业完成率: 80%<br>
+              • 课外阅读: 4次/7天<br>
+              • 学习时长: 平均 45 分钟/天<br><br>
+              💡 <b>建议:</b><br>
+              阅读习惯不错！可以尝试让小明自己选书，增加兴趣。作业方面，建议固定一个安静的学习时间段。
+            </div>
+          </div>
+
+          <div class="chat-bubble user">
+            <div class="bubble-content">
+              帮我制定一个学习计划
+            </div>
+          </div>
+
+          <div class="chat-bubble ai">
+            <div class="bubble-content">
+              📅 <b>给小明的学习计划：</b><br><br>
+              <b>周一至周五</b><br>
+              • 16:00-17:00 写作业 (+3分)<br>
+              • 17:00-17:30 课外阅读 (+3分)<br>
+              • 完成后额外奖励 +2分<br><br>
+              <b>周末</b><br>
+              • 自由阅读 30 分钟 (+2分)<br>
+              • 复习本周内容 (+3分)<br><br>
+              要添加到每日任务里吗？
+            </div>
+            <div class="bubble-actions">
+              <div class="bubble-action-btn">✅ 添加到任务</div>
+              <div class="bubble-action-btn">❌ 先不了</div>
+            </div>
+          </div>
+        </div>
+        <div class="chat-input-bar">
+          <div class="chat-input">输入消息...</div>
+          <div class="chat-send">📤</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 飞书交互 -->
+  <div class="screen-wrapper">
+    <div class="screen-label">💬 飞书机器人交互</div>
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span class="time">9:41</span>
+          <span class="status-icons">📶 🔋</span>
+        </div>
+        <div class="feishu-header">
+          <span class="chat-back">←</span>
+          <div class="feishu-avatar">🤖</div>
+          <div>
+            <div class="feishu-name">积分小助手</div>
+            <div class="feishu-status">● 在线</div>
+          </div>
+        </div>
+        <div class="feishu-chat">
+          <div class="fs-time">— 今天 19:30 —</div>
+
+          <div class="fs-msg user">
+            <div class="fs-bubble">小明今天按时起床了</div>
+          </div>
+
+          <div class="fs-msg bot">
+            <div class="fs-card">
+              <div class="fs-card-header">✅ 已记录</div>
+              <div class="fs-card-body">
+                <div class="fs-card-row">
+                  <span>👦 小明 · 🌅 起床洗漱</span>
+                  <span style="color:#4CAF50;font-weight:700">+2</span>
+                </div>
+                <div class="fs-card-row" style="margin-top:6px;padding-top:6px;border-top:1px solid #f0f0f0">
+                  <span>今日积分: 12/20</span>
+                  <span>总积分: ⭐ 87</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="fs-msg user">
+            <div class="fs-bubble">小明最近表现怎么样</div>
+          </div>
+
+          <div class="fs-msg bot">
+            <div class="fs-card">
+              <div class="fs-card-header">📊 小明本周报告</div>
+              <div class="fs-card-body">
+                <div class="fs-card-row"><span>⭐ 总积分</span><span style="font-weight:700">87</span></div>
+                <div class="fs-card-row"><span>📈 本周获得</span><span style="color:#4CAF50;font-weight:700">+58</span></div>
+                <div class="fs-card-row"><span>🔥 连续打卡</span><span style="font-weight:700">5 天</span></div>
+                <div class="fs-card-row"><span>📊 今日完成</span><span style="font-weight:700">6/7</span></div>
+                <div style="margin-top:8px;padding-top:8px;border-top:1px solid #f0f0f0;font-size:12px;color:#666">
+                  🎯 最近目标: 买新书 (还差35分)
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="fs-msg user">
+            <div class="fs-bubble">怎么让孩子更爱运动？</div>
+          </div>
+
+          <div class="fs-msg bot">
+            <div class="fs-card">
+              <div class="fs-card-header">💡 AI 建议</div>
+              <div class="fs-card-body" style="font-size:12px;line-height:1.7">
+                📊 小明本周运动只有 2 次，确实偏少。<br><br>
+                <b>建议：</b><br>
+                1. 从短时间开始（15分钟跳绳）<br>
+                2. 周末安排亲子运动<br>
+                3. 运动后给额外 +2 积分奖励<br>
+                4. 让小明选一项喜欢的运动
+              </div>
+              <div class="fs-card-actions">
+                <div class="fs-card-btn primary">✅ 添加运动奖励</div>
+                <div class="fs-card-btn info">💬 继续聊</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="chat-input-bar">
+          <div class="chat-input">输入消息...</div>
+          <div class="chat-send">📤</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 设计系统 ========== -->
+<div class="section-title">🎨 设计系统</div>
+
+<div class="design-system">
+  <div class="ds-card">
+    <div class="ds-title">🎨 色彩规范</div>
+    <div class="color-grid">
+      <div class="color-swatch">
+        <div class="color-box" style="background:#4CAF50"></div>
+        <div class="color-name">主色 (绿)</div>
+        <div class="color-hex">#4CAF50</div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-box" style="background:#FF9800"></div>
+        <div class="color-name">辅助 (橙)</div>
+        <div class="color-hex">#FF9800</div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-box" style="background:#2196F3"></div>
+        <div class="color-name">AI (蓝)</div>
+        <div class="color-hex">#2196F3</div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-box" style="background:#F44336"></div>
+        <div class="color-name">扣分 (红)</div>
+        <div class="color-hex">#F44336</div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-box" style="background:#FFD700"></div>
+        <div class="color-name">积分 (金)</div>
+        <div class="color-hex">#FFD700</div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-box" style="background:#FF5722"></div>
+        <div class="color-name">连打卡 (火)</div>
+        <div class="color-hex">#FF5722</div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-box" style="background:#F5F5F5;border:1px solid #ddd"></div>
+        <div class="color-name">背景</div>
+        <div class="color-hex">#F5F5F5</div>
+      </div>
+      <div class="color-swatch">
+        <div class="color-box" style="background:#1A1A2E"></div>
+        <div class="color-name">暗色背景</div>
+        <div class="color-hex">#1A1A2E</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ds-card">
+    <div class="ds-title">😀 行为图标 (Emoji)</div>
+    <div class="icon-grid">
+      <div class="icon-item"><div class="icon-emoji">🌅</div><div class="icon-label">起床洗漱</div></div>
+      <div class="icon-item"><div class="icon-emoji">🥣</div><div class="icon-label">早餐</div></div>
+      <div class="icon-item"><div class="icon-emoji">📚</div><div class="icon-label">学习</div></div>
+      <div class="icon-item"><div class="icon-emoji">🍱</div><div class="icon-label">午餐</div></div>
+      <div class="icon-item"><div class="icon-emoji">🍽️</div><div class="icon-label">晚餐</div></div>
+      <div class="icon-item"><div class="icon-emoji">🪥</div><div class="icon-label">晚上洗漱</div></div>
+      <div class="icon-item"><div class="icon-emoji">😴</div><div class="icon-label">睡觉</div></div>
+      <div class="icon-item"><div class="icon-emoji">📖</div><div class="icon-label">课外阅读</div></div>
+      <div class="icon-item"><div class="icon-emoji">🏃</div><div class="icon-label">运动</div></div>
+      <div class="icon-item"><div class="icon-emoji">🧹</div><div class="icon-label">做家务</div></div>
+      <div class="icon-item"><div class="icon-emoji">🎹</div><div class="icon-label">练乐器</div></div>
+      <div class="icon-item"><div class="icon-emoji">🎨</div><div class="icon-label">画画</div></div>
+      <div class="icon-item"><div class="icon-emoji">😤</div><div class="icon-label">发脾气</div></div>
+      <div class="icon-item"><div class="icon-emoji">📱</div><div class="icon-label">超时电子</div></div>
+      <div class="icon-item"><div class="icon-emoji">❌</div><div class="icon-label">说谎</div></div>
+      <div class="icon-item"><div class="icon-emoji">😠</div><div class="icon-label">打人骂人</div></div>
+    </div>
+  </div>
+
+  <div class="ds-card">
+    <div class="ds-title">🏆 成就图标</div>
+    <div class="icon-grid">
+      <div class="icon-item"><div class="icon-emoji">🏅</div><div class="icon-label">一周达人</div></div>
+      <div class="icon-item"><div class="icon-emoji">🏆</div><div class="icon-label">月度之星</div></div>
+      <div class="icon-item"><div class="icon-emoji">⭐</div><div class="icon-label">百分能手</div></div>
+      <div class="icon-item"><div class="icon-emoji">🎖️</div><div class="icon-label">梦想启程</div></div>
+      <div class="icon-item"><div class="icon-emoji">💎</div><div class="icon-label">积分大王</div></div>
+      <div class="icon-item"><div class="icon-emoji">🌈</div><div class="icon-label">品德标兵</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 核心流程 ========== -->
+<div class="section-title">🔄 核心交互流程</div>
+
+<div class="flow-section">
+  <div class="flow-card">
+    <div class="ds-title">📋 每日打卡流程</div>
+    <div class="flow-steps">
+      <div class="flow-step">打开 App / 发消息</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step decision">选择方式</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step action">App 点击打卡</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step">✨ 积分动画</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step decision">全部完成?</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step action">🎉 撒花特效</div>
+    </div>
+    <div style="text-align:center;margin-top:8px;font-size:11px;color:#999">
+      飞书/微信路径：发消息 → AI 意图识别 → 执行操作 → 返回确认卡片
+    </div>
+  </div>
+
+  <div class="flow-card" style="margin-top:16px">
+    <div class="ds-title">🎁 礼品兑换流程</div>
+    <div class="flow-steps">
+      <div class="flow-step">选择礼品</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step decision">积分够?</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step action">确认兑换弹窗</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step">扣除积分</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step">🎉 兑换成功</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step action">🤖 AI 鼓励</div>
+    </div>
+    <div style="text-align:center;margin-top:8px;font-size:11px;color:#999">
+      积分不够 → 加入心愿单 → 显示进度条 → 等待积分积累
+    </div>
+  </div>
+
+  <div class="flow-card" style="margin-top:16px">
+    <div class="ds-title">🤖 AI 分析推送流程</div>
+    <div class="flow-steps">
+      <div class="flow-step">⏰ 定时触发 (21:00)</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step action">收集行为数据</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step action">AI 分析引擎</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step">生成报告</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step action">推送飞书/微信</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step">💬 用户可追问</div>
+    </div>
+  </div>
+</div>
+
+<div style="text-align:center;padding:40px 0;color:#666;font-size:13px">
+  🌟 小孩行为积分奖惩系统 — UI 原型 v0.1<br>
+  2026-06-24
+</div>
+
+</body>
+</html>
