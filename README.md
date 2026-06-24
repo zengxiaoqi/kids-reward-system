@@ -18,6 +18,7 @@
 
 - [需求文档 (PRD)](docs/PRD.md)
 - [技术调研](docs/RESEARCH.md)
+- [UI 交互设计](docs/UI-DESIGN.md)
 
 ## 技术栈
 
